@@ -1,4 +1,4 @@
-# BELO
+# belo
 
 Belo is a command-line tool for managing player ratings using the Elo rating system. It is designed to be simple and easy to use, with a focus on the core functionality of managing player ratings. It allows you to containerize projects, add players, record match outcomes, and view player statistics in a neatly formatted table.
 
@@ -14,8 +14,12 @@ Belo is a command-line tool for managing player ratings using the Elo rating sys
 ```bash
 
 # Install Belo
-pip install belo
+pip install git+https://github.sec.samsung.net/SR-SE/belo.git
+```
 
+You can now use the `belo` command to manage player ratings. Here are some example commands to get you started:
+
+```bash
 # Initialize a new project
 belo init my_project
 
