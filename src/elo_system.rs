@@ -80,17 +80,12 @@ impl EloSystem {
         }
 
         // Borrow players mutably without overlapping
-        let (first, second) = if index1 < index2 {
-            self.players.split_at_mut(index2)
+        let (player1, player2) = if index1 < index2 {
+            let (first, second) = self.players.split_at_mut(index2);
+            (&mut first[index1], &mut second[0])
         } else {
-            self.players.split_at_mut(index1)
-        };
-
-        let player1 = &mut first[index1];
-        let player2 = if index1 < index2 {
-            &mut second[0]
-        } else {
-            &mut second[index2 - index1]
+            let (first, second) = self.players.split_at_mut(index1);
+            (&mut second[0], &mut first[index2])
         };
 
         // Update stats based on game result
