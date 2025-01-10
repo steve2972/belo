@@ -5,6 +5,8 @@ edition = "2021"
 authors = ["송재헌 <jhun.song@samsung.com>"]
 license = "Apache-2.0"
 keywords = ["rust", "elo", "glicko"]
+repository = "https://github.sec.samsung.net/SR-SE/belo"
+description = "A fast bayesian elo rating system, written in Rust."
 
 [dependencies]
 anyhow = "1.0.95"
@@ -21,3 +23,9 @@ assert_cmd = "2.0.16"
 [[bin]]
 name = "belo"
 path = "src/main.rs"
+
+[built-dependencies]
+maturin = "1.8.1"
+
+[target.windows_x86_64-pc-windows-gnu]
+linker = "x86_64-w64-mingw32-gcc"

@@ -11,10 +11,11 @@ Belo is a command-line tool for managing player ratings using the Elo rating sys
 
 ## Quick Start
 
-```bash
+> **Note** Belo is only tested on linux. Windows support is not guaranteed.
 
-# Install Belo
-pip install https://github.sec.samsung.net/SR-SE/belo/releases/download/v0.1.0/belo-0.1.0-py3-none-manylinux_2_31_x86_64.whl
+```bash
+pip install belo
+
 ```
 
 You can now use the `belo` command to manage player ratings. Here are some example commands to get you started:

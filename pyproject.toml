@@ -1,3 +1,11 @@
 [build-system]
 requires = ["maturin>=0.12"]
 build-backend = "maturin"
+
+[project]
+name = "belo"
+version = "0.1.0"
+license = "Apache-2.0"
+keywords = ["rust", "elo", "glicko"]
+repository = "https://github.sec.samsung.net/SR-SE/belo"
+description = "A fast bayesian elo rating system, written in Rust."
