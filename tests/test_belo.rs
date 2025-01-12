@@ -35,6 +35,24 @@ fn test_commands() {
 }
 
 #[test]
+fn test_list_projects_command() {
+    let mut cmd_list = Command::cargo_bin("belo").unwrap();
+    cmd_list.arg("list").assert().success();
+}
+
+#[test]
+fn test_whoami_with_no_active_project() {
+    let mut cmd_whoami = Command::cargo_bin("belo").unwrap();
+    cmd_whoami.arg("whoami").assert().success();
+}
+
+#[test]
+fn test_activate_nonexistent_project() {
+    let mut cmd_activate = Command::cargo_bin("belo").unwrap();
+    cmd_activate.arg("activate").arg("nonexistent").assert().failure();
+}
+
+#[test]
 fn test_big_load() {
     let mut cmd_init = Command::cargo_bin("belo").unwrap();
     cmd_init.arg("init").arg("tmp").assert().success();

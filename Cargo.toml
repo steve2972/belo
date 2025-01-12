@@ -25,9 +25,3 @@ rand = "0.8.5"
 [[bin]]
 name = "belo"
 path = "src/main.rs"
-
-[built-dependencies]
-maturin = "1.8.1"
-
-[target.windows_x86_64-pc-windows-gnu]
-linker = "x86_64-w64-mingw32-gcc"
