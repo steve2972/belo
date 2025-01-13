@@ -75,7 +75,7 @@ dependencies = [
 
 [[package]]
 name = "belo"
-version = "0.1.0"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "assert_cmd",
