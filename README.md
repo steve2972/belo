@@ -49,3 +49,14 @@ belo deactivate
 # Delete the project
 belo delete my_project
 ```
+
+### Testing
+
+Make sure to use only one thread when running
+- This is because of a race condition in the current implementation of `belo`
+- Hopefully this will be fixed in the future..!
+
+```base
+cargo test -- --test-threads=1
+```
+
