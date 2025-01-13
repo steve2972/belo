@@ -28,7 +28,7 @@ pub enum Commands {
     /// Initializes a new project at the given project name.
     ///
     /// Creates a hidden directory to store player ratings and configurations.
-    /// 
+    ///
     /// **Example**
     /// ```sh
     /// belo init my_project

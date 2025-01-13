@@ -65,7 +65,6 @@ fn init_project(project_name: &str) -> Result<()> {
 
     fs::create_dir_all(&project_path)
         .with_context(|| format!("Failed to create project directory at '{:?}'", project_path))?;
-    
     let elo_system = EloSystem::new();
     let elo_file = project_path.join("elo_data.json");
     let serialized = serde_json::to_string_pretty(&elo_system)?;
@@ -147,7 +146,6 @@ fn deactivate() -> Result<()> {
     } else {
         config.active_project = None;
         config.save()?;
-    
         println!("Project has been deactivated.");
     }
     Ok(())
@@ -156,7 +154,6 @@ fn deactivate() -> Result<()> {
 fn delete_project(project_name: &str) -> Result<()> {
     // First deactivate the project if it's active
     deactivate()?;
-    
     let projects_dir = get_projects_dir()?;
     let project_path = projects_dir.join(project_name);
 
@@ -207,5 +204,5 @@ fn save_active_project(elo_system: &EloSystem) -> Result<()> {
 
 fn get_projects_dir() -> Result<PathBuf> {
     let home = home_dir().ok_or_else(|| anyhow!("Failed to get home directory"))?;
-    Ok(home.join(".belo").join("projects"))
+    Ok(home.join(".cache").join("belo"))
 }
