@@ -1,51 +1,58 @@
+mod elo_system;
+
 use pyo3::prelude::*;
 use crate::elo_system::{EloSystem, GameResult};
-use anyhow::Result; // to match existing error handling
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
 
-#[pyclass]
-struct PyEloSystem {
-    system: EloSystem,
+static GLOBAL_ELO_SYSTEM: Lazy<Mutex<EloSystem>> = Lazy::new(|| Mutex::new(EloSystem::new()));
+
+#[pyfunction]
+fn init_state() -> PyResult<()> {
+    let mut sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
+    *sys = EloSystem::new();
+    Ok(())
 }
 
-#[pymethods]
-impl PyEloSystem {
-    #[new]
-    fn new() -> Self {
-        Self {
-            system: EloSystem::new(),
-        }
-    }
+#[pyfunction]
+fn add_player(id: &str) -> PyResult<()> {
+    let mut sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
+    sys.add_player(id)
+       .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
+}
 
-    fn add_player(&mut self, id: &str) -> PyResult<()> {
-        self.system.add_player(id)
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
-    }
+#[pyfunction]
+fn record_game(id1: &str, result: &str, id2: &str) -> PyResult<()> {
+    let game_result = match result {
+        "gt" | ">"  => GameResult::Player1Wins,
+        "lt" | "<"  => GameResult::Player2Wins,
+        "eq" | "==" => GameResult::Tie,
+        _ => return Err(pyo3::exceptions::PyValueError::new_err("Invalid game result")),
+    };
+    let mut sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
+    sys.record_game(id1, game_result, id2)
+       .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
+}
 
-    fn record_game(&mut self, id1: &str, result: &str, id2: &str) -> PyResult<()> {
-        let game_result = match result {
-            "gt" => GameResult::Player1Wins,
-            ">" => GameResult::Player1Wins,
-            "lt" => GameResult::Player2Wins,
-            "<" => GameResult::Player2Wins,
-            "eq" => GameResult::Tie,
-            "==" => GameResult::Tie,
-            _ => return Err(pyo3::exceptions::PyValueError::new_err("Invalid game result")),
-        };
-        self.system.record_game(id1, game_result, id2)
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
-    }
+#[pyfunction]
+#[pyo3(signature = (n=None))]
+fn head(n: Option<usize>) {
+    let sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
+    sys.print_top(n);
+}
 
-    fn print_top(&self, n: Option<usize>) {
-        self.system.print_top(n);
-    }
-
-    fn print_info(&self, id: &str) {
-        self.system.print_info(id);
-    }
+#[pyfunction]
+fn print_info(id: &str) {
+    let sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
+    sys.print_info(id);
 }
 
 #[pymodule]
-fn belo(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<PyEloSystem>()?;
+fn belo(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(init_state, m)?)?;
+    m.add_function(wrap_pyfunction!(add_player, m)?)?;
+    m.add_function(wrap_pyfunction!(record_game, m)?)?;
+    m.add_function(wrap_pyfunction!(head, m)?)?;
+    m.add_function(wrap_pyfunction!(print_info, m)?)?;
     Ok(())
 }
