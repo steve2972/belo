@@ -192,5 +192,16 @@ impl EloSystem {
             println!("Player with ID '{}' not found.", id);
         }
     }
+
+    pub fn get_top_n(&self, n: Option<usize>) -> Vec<(String, f64, u32, u32, u32)> {
+        let num = n.unwrap_or(5);
+        let mut sorted_players: Vec<_> = self.players.values().cloned().collect();
+        sorted_players.sort_by(|a, b| b.rating.rating.partial_cmp(&a.rating.rating).unwrap());
+        sorted_players
+            .into_iter()
+            .take(num)
+            .map(|p| (p.id, p.rating.rating, p.wins, p.losses, p.ties))
+            .collect()
+    }
 }
 

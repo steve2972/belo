@@ -4,6 +4,8 @@ use pyo3::prelude::*;
 use crate::elo_system::{EloSystem, GameResult};
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
+use pyo3::types::PyDict;
+use pyo3::Py;
 
 static GLOBAL_ELO_SYSTEM: Lazy<Mutex<EloSystem>> = Lazy::new(|| Mutex::new(EloSystem::new()));
 
@@ -35,6 +37,25 @@ fn record_game(id1: &str, result: &str, id2: &str) -> PyResult<()> {
 }
 
 #[pyfunction]
+#[pyo3(signature = (n=5))]
+fn get_top_n(n: Option<usize>, py: Python) -> PyResult<Vec<Py<PyDict>>> {
+    let sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
+    let top = sys.get_top_n(n);
+
+    let mut result = Vec::with_capacity(top.len());
+    for (id, elo, wins, losses, ties) in top {
+        let d = PyDict::new(py);
+        d.set_item("id", id)?;
+        d.set_item("elo", elo)?;
+        d.set_item("wins", wins)?;
+        d.set_item("losses", losses)?;
+        d.set_item("ties", ties)?;
+        result.push(d.into());
+    }
+    Ok(result)
+}
+
+#[pyfunction]
 #[pyo3(signature = (n=None))]
 fn head(n: Option<usize>) {
     let sys = GLOBAL_ELO_SYSTEM.lock().unwrap();
@@ -52,6 +73,7 @@ fn belo(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init_state, m)?)?;
     m.add_function(wrap_pyfunction!(add_player, m)?)?;
     m.add_function(wrap_pyfunction!(record_game, m)?)?;
+    m.add_function(wrap_pyfunction!(get_top_n, m)?)?;
     m.add_function(wrap_pyfunction!(head, m)?)?;
     m.add_function(wrap_pyfunction!(print_info, m)?)?;
     Ok(())
